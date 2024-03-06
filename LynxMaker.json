@@ -2,7 +2,7 @@
     {
 		"sn": "SN11",
         "camera": {
-			"uid": "F8:DC:7A:5F:F8:37",
+			"uid": "f8:dc:7a:5f:f8:37",
 			"ip": "192.168.0.102"
 		},
 		"promotion": {
@@ -15,7 +15,7 @@
 	{
 		"sn": "SN19",
         "camera": {
-			"uid": "F8:DC:7A:5F:F9:01",
+			"uid": "f8:dc:7a:5f:f9:01",
 			"ip": "192.168.0.100"
 		},
 		"promotion": {
