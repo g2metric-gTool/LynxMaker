@@ -38,3 +38,7 @@
 	path = gLib/gMqtt
 	url = https://github.com/g2metric-gLib/gMqtt
 	branch = develop
+[submodule "xLib/xDesignKit"]
+	path = xLib/xDesignKit
+	url = https://github.com/g2metric-xLib/xDesignKit
+	branch = develop

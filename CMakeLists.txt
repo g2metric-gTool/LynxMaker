@@ -34,6 +34,7 @@ set(g_projects
 
 set(x_projects
 	xMaker
+	xDesignKit
 )
 
 set(as_subproject ${g_projects} ${x_projects})
@@ -65,7 +66,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # apps
-#add_subdirectory(app/LynxMaker)
+add_subdirectory(app/LynxMaker)
 
 # gLib
 add_subdirectory(gLib/gCore)
@@ -79,5 +80,6 @@ add_subdirectory(gLib/gSerializer)
 add_subdirectory(gLib/gMulticastSocket)
 
 add_subdirectory(xLib/xMaker)
+add_subdirectory(xLib/xDesignKit)
 
 install()
