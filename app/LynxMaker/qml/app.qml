@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
-import XFluUi
+import QtQuick.Controls
+import LynxMaker
 
 FluWindow {
     id:window

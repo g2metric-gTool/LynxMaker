@@ -7,7 +7,7 @@
 class FpsItem : public QQuickItem
 {
     Q_OBJECT
-    Q_PROPERTY_AUTO(int, fps)
+        Q_PROPERTY_AUTO(int, fps)
 public:
     FpsItem();
 

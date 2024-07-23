@@ -4,24 +4,22 @@
 
 #include "component/circularReveal.h"
 
-CircularReveal::CircularReveal(QQuickItem* parent) : QQuickPaintedItem(parent)
-{
+CircularReveal::CircularReveal(QQuickItem* parent) : QQuickPaintedItem(parent) {
+    _target = nullptr;
+    _radius = 0;
     _anim = new QPropertyAnimation(this, "radius", this);
-    setVisible(false);
     _anim->setDuration(333);
     _anim->setEasingCurve(QEasingCurve::OutCubic);
+    setVisible(false);
     connect(_anim, &QPropertyAnimation::finished, this, [=]() {
         update();
         setVisible(false);
         Q_EMIT animationFinished();
         });
-    connect(this, &CircularReveal::radiusChanged, this, [=]() {
-        update();
-        });
+    connect(this, &CircularReveal::radiusChanged, this, [=]() { update(); });
 }
 
-void CircularReveal::paint(QPainter* painter)
-{
+void CircularReveal::paint(QPainter* painter) {
     painter->save();
     painter->drawImage(QRect(0, 0, static_cast<int>(width()), static_cast<int>(height())), _source);
     QPainterPath path;
@@ -32,12 +30,13 @@ void CircularReveal::paint(QPainter* painter)
     painter->restore();
 }
 
-void CircularReveal::start(int w, int h, const QPoint& center, int radius) {
+[[maybe_unused]] void CircularReveal::start(int w, int h, const QPoint& center, int radius) {
     _anim->setStartValue(0);
     _anim->setEndValue(radius);
     _center = center;
     _grabResult = _target->grabToImage(QSize(w, h));
-    connect(_grabResult.data(), &QQuickItemGrabResult::ready, this, &CircularReveal::handleGrabResult);
+    connect(_grabResult.data(), &QQuickItemGrabResult::ready, this,
+        &CircularReveal::handleGrabResult);
 }
 
 void CircularReveal::handleGrabResult() {
