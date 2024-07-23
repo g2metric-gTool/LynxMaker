@@ -1,0 +1,14 @@
+user.cmake
+msvc_build
+build*
+install
+recovery
+*.vs
+*.rc
+ext
+*.pb.h
+*.pb.cc
+*.txt.user
+QTBUILD*
+Version.h
+*.onnx

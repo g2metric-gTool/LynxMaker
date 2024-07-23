@@ -1,0 +1,40 @@
+[submodule "gLib/gPromotion"]
+	path = gLib/gPromotion
+	url = https://github.com/g2metric-gLib/gPromotion
+	branch = develop
+[submodule "gLib/gMamba"]
+	path = gLib/gMamba
+	url = https://github.com/g2metric-gLib/gMamba
+	branch = develop
+[submodule "gLib/gLog"]
+	path = gLib/gLog
+	url = https://github.com/g2metric-gLib/gLog
+	branch = develop
+[submodule "gLib/gArtnet"]
+	path = gLib/gArtnet
+	url = https://github.com/g2metric-gLib/gArtnet
+	branch = develop
+[submodule "gLib/gMulticastSocket"]
+	path = gLib/gMulticastSocket
+	url = https://github.com/g2metric-gLib/gMulticastSocket
+	branch = develop
+[submodule "gLib/gSerializer"]
+	path = gLib/gSerializer
+	url = https://github.com/g2metric-gLib/gSerializer
+	branch = develop
+[submodule "xLib/xMaker"]
+	path = xLib/xMaker
+	url = https://github.com/g2metric-xLib/xMaker
+	branch = develop
+[submodule "gLib/gCore"]
+	path = gLib/gCore
+	url = https://github.com/g2metric-gLib/gCore
+	branch = develop
+[submodule "gLib/gFtp"]
+	path = gLib/gFtp
+	url = https://github.com/g2metric-gLib/gFtp
+	branch = develop
+[submodule "gLib/gMqtt"]
+	path = gLib/gMqtt
+	url = https://github.com/g2metric-gLib/gMqtt
+	branch = develop
