@@ -11,6 +11,7 @@
 #include "version.h"
 #include "component/fpsItem.h"
 #include "component/circularReveal.h"
+#include "LynxConfigure.h"
 
 // gLib
 #include "log/gLog.h"
@@ -71,4 +72,6 @@ void initializeQmlContext(QQmlApplicationEngine& engine, const char* uri)
 {
 	qmlRegisterType<FpsItem>(uri, major, minor, "FpsItem");
 	qmlRegisterType<CircularReveal>(uri, major, minor, "CircularReveal");
+
+	engine.rootContext()->setContextProperty("LynxConfigure", LynxConfigure::getInstance());
 }

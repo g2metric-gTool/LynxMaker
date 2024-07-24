@@ -6,10 +6,10 @@ import LynxMaker
 FluWindow {
     id:window
     title: Qt.application.name
-    width: 1280
-    height: 720
-    minimumWidth: 720
-    minimumHeight: 480
+    width: 500
+    height: 400
+    minimumWidth: 350
+    minimumHeight: 350
     autoVisible: true
     launchMode: FluWindowType.SingleTask
     fitsAppBarWindows: true
@@ -19,16 +19,77 @@ FluWindow {
         height: 30
         showDark: true
         darkClickListener:(button)=>handleDarkChanged(button)
-        closeClickListener: ()=>{dialog_close.open()}
+        closeClickListener: ()=>{window.close()}
         z:7
     }
 
+    FluText{
+        id: cameraInfo
+        anchors {top: parent.top; left: parent.left; right: parent.horizontalCenter; topMargin: 50; leftMargin: 25; rightMargin:15}
+        text:"Camera Info"
+    }
+
+    FluText{
+        id: promotionInfo
+        anchors {top: parent.top; left: parent.horizontalCenter; right: parent.right; topMargin: 50; rightMargin:25; leftMargin: 15}
+        text: "Promotion Info"
+    }
+
+    FluComboBox{
+        id: camera
+        anchors {top: cameraInfo.bottom; left: parent.left; right: parent.horizontalCenter; topMargin: 10; leftMargin: 25; rightMargin:15}
+        model: LynxConfigure.cameraList
+        onCurrentTextChanged:(deviceInfo.text = LynxConfigure.configInfo(currentText))
+    }
+    FluComboBox{
+        id: promotion
+        anchors {top: promotionInfo.bottom; left: parent.horizontalCenter; right: parent.right; topMargin: 10; rightMargin:25; leftMargin: 15}
+        model: LynxConfigure.promotionList
+        onCurrentTextChanged:(promotionUid.text = "Current promotion: " + LynxConfigure.promotionUid(currentText))
+    }
+
+    FluText{
+        anchors {bottom: serialNumber.top; horizontalCenter: parent.horizontalCenter}
+        text: "SERIAL NUMBER"
+    }
+    FluTextBox{
+        id: serialNumber
+        anchors {top: promotion.bottom; horizontalCenter: parent.horizontalCenter; topMargin: 50}
+    }
+
     FluButton{
-        anchors.centerIn: parent
-        text:"hello world"
+        text:"Configure"
+        enabled: (serialNumber.text !== "" && promotion.currentText !== "" && camera.currentText !== "")
+        anchors {top: serialNumber.bottom; left: parent.left; right: parent.horizontalCenter; topMargin: 50; leftMargin: 25; rightMargin:15}
         onClicked: {
-            showSuccess("click hello world!")
+            showSuccess("Configure")
+            LynxConfigure.configure(camera.currentText, promotion.currentText, serialNumber.text)
         }
+    }
+
+    FluButton{
+        id: btnRefresh
+        text:"Refresh"
+        anchors {top: serialNumber.bottom; left: parent.horizontalCenter; right: parent.right; topMargin: 50; rightMargin:25; leftMargin: 15}
+        onClicked: {
+            showSuccess("Refresh")
+            LynxConfigure.updateList();
+            deviceInfo.text = LynxConfigure.configInfo(camera.currentText)
+        }
+    }
+
+    FluText{
+        id: deviceInfo
+        anchors {top: btnRefresh.bottom ; horizontalCenter: parent.horizontalCenter; topMargin: 30}
+        text: ""
+        color: "green"
+    }
+
+    
+    FluText{
+        id: promotionUid
+        anchors {top: deviceInfo.bottom; horizontalCenter: parent.horizontalCenter; leftMargin: 15}
+        text:""
     }
 
     Component{

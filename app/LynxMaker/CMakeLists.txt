@@ -8,6 +8,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+set(TINYXML2_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/tinyxml2/10.0.0/)
+set(LIBSSH2_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../ext/libssh2/1.11.0/)
+
 include(${CMAKE_UTILS_DIR}/utils.cmake)
 set(config "FOLDER_NAME:${FOLDER_NAME};TARGET_NAME:${TARGET_NAME}")
 
@@ -16,7 +19,7 @@ setup_version()
 
 find_package(Qt6 REQUIRED COMPONENTS Quick Svg Network Widgets Concurrent LinguistTools)
 find_package(gArtnet gCore gFtp gLog gMamba gMqtt gMulticastSocket gPromotion gSerializer)
-find_package(xMaker xDesignKit)
+find_package(xMaker xDesignKit lynxV2)
 
 FILE(GLOB_RECURSE header_files ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 FILE(GLOB_RECURSE source_files ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
@@ -46,7 +49,7 @@ add_executable(${TARGET_NAME} WIN32
 	${header_files}
 	${resource_files}
 	${qml_files}
-	${qm_files}
+        ${qm_files}
 )
 
 if(MSVC_IDE)
@@ -68,7 +71,20 @@ target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Quick Qt6::Svg Qt6::Network Qt
 target_link_libraries(${TARGET_NAME} PRIVATE gArtnet gCore gFtp gLog gMamba gMqtt gMulticastSocket gPromotion gSerializer)
 target_link_libraries(${TARGET_NAME} PRIVATE xMaker xDesignKit)
 
+target_include_directories(${TARGET_NAME} PRIVATE ${TINYXML2_DIR}/include)
+target_include_directories(${TARGET_NAME} PRIVATE ${LIBSSH2_DIR}/include)
+
+target_link_libraries(${TARGET_NAME} PRIVATE optimized ${TINYXML2_DIR}/lib/tinyxml2.lib)
+target_link_libraries(${TARGET_NAME} PRIVATE debug ${TINYXML2_DIR}/lib/tinyxml2d.lib)	
+target_link_libraries(${TARGET_NAME} PRIVATE optimized ${LIBSSH2_DIR}/lib/libssh2.lib)
+target_link_libraries(${TARGET_NAME} PRIVATE debug ${LIBSSH2_DIR}/lib/libssh2d.lib)
+
+
 install(TARGETS ${TARGET_NAME} RUNTIME DESTINATION bin)
+
+FILE(GLOB release_dll_files "${LIBSSH2_DIR}/bin/*.dll")
+FILE(GLOB debug_dll_files "${LIBSSH2_DIR}/bin/*d.dll")
+LIST(REMOVE_ITEM release_dll_files ${debug_dll_files})
 
 get_target_property(${TARGET_NAME} Qt6::qmake IMPORTED_LOCATION)
 get_filename_component(Qt6_WINDEPLOYQT_EXECUTABLE ${${TARGET_NAME}} PATH)
