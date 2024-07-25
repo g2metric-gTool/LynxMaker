@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import LynxMaker
+import "common"
 
 FluWindow {
     id:window
@@ -49,7 +50,7 @@ FluWindow {
     }
 
     FluText{
-        anchors {bottom: serialNumber.top; horizontalCenter: parent.horizontalCenter}
+        anchors {bottom: serialNumber.top; horizontalCenter: parent.horizontalCenter; bottomMargin: 10}
         text: "SERIAL NUMBER"
     }
     FluTextBox{
@@ -57,21 +58,31 @@ FluWindow {
         anchors {top: promotion.bottom; horizontalCenter: parent.horizontalCenter; topMargin: 50}
     }
 
-    FluButton{
-        text:"Configure"
-        enabled: (serialNumber.text !== "" && promotion.currentText !== "" && camera.currentText !== "")
+
+    X_Button
+    {
         anchors {top: serialNumber.bottom; left: parent.left; right: parent.horizontalCenter; topMargin: 50; leftMargin: 25; rightMargin:15}
-        onClicked: {
+        enabled: (serialNumber.text !== "" && promotion.currentText !== "" && camera.currentText !== "")
+        width: 75
+        height: 30
+        radius: 5
+        text: qsTr("Configure")
+        onClicked:
+        {
             showSuccess("Configure")
             LynxConfigure.configure(camera.currentText, promotion.currentText, serialNumber.text)
         }
     }
-
-    FluButton{
+    X_Button
+    {
         id: btnRefresh
-        text:"Refresh"
         anchors {top: serialNumber.bottom; left: parent.horizontalCenter; right: parent.right; topMargin: 50; rightMargin:25; leftMargin: 15}
-        onClicked: {
+        width: 75
+        height: 30
+        radius: 5
+        text: qsTr("Refresh")
+        onClicked:
+        {
             showSuccess("Refresh")
             LynxConfigure.updateList();
             deviceInfo.text = LynxConfigure.configInfo(camera.currentText)
