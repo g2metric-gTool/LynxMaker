@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="190.298"
+   height="199.869"
+   viewBox="0 0 190.298 199.869"
+   version="1.1"
+   id="svg21"
+   sodipodi:docname="X.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs25" />
+  <sodipodi:namedview
+     id="namedview23"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="1.7445865"
+     inkscape:cx="-207.78562"
+     inkscape:cy="99.737099"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Groupe_20477" />
+  <g
+     id="Groupe_21396"
+     data-name="Groupe 21396"
+     transform="translate(-1230.608,-389)">
+    <g
+       id="Groupe_20477"
+       data-name="Groupe 20477"
+       transform="translate(337.002,389)">
+      <g
+         id="Groupe_20095"
+         data-name="Groupe 20095"
+         transform="translate(350.779)"
+         style="display:inline">
+        <g
+           id="Groupe_20093"
+           data-name="Groupe 20093"
+           transform="translate(542.827)">
+          <g
+             id="Groupe_20089"
+             data-name="Groupe 20089">
+            <path
+               id="Tracé_20013"
+               data-name="Tracé 20013"
+               d="M 554.117,-42.1 514.143,22.369 H 459.25 l 63.9,-100.5 -61.65,-99.369 h 61.65 l 58.41,92.763 z"
+               transform="translate(-459.25,177.5)"
+               fill="#71d776" />
+            <path
+               id="Tracé_20014"
+               data-name="Tracé 20014"
+               d="m 553.3,-131.319 28.375,-46.181 h 53.486 l -55.318,89.988 z"
+               transform="translate(-447.397,177.5)"
+               fill="#102a4b" />
+          </g>
+          <g
+             id="Groupe_20091"
+             data-name="Groupe 20091"
+             transform="translate(101.047,103.195)">
+            <path
+               id="Tracé_20013-2"
+               data-name="Tracé 20013"
+               d="m 533.469,-40.118 -32.62,-52.982 -1.738,-2.971 27.706,-40.724 3.872,5.57 2.73,4.313 54.943,86.79 z"
+               transform="translate(-499.111,136.791)"
+               fill="#102a4b" />
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
