@@ -140,26 +140,30 @@ QString ConfigureController::deviceDetails(QString ipCamera)
 	// Découverte des LynxInfo
 	std::list<LynxInfo> lynxList = Connection::discover();
 
-	// Variables pour stocker les informations filtrées
-	QString resetDuration;
-	QString serialNumber;
-	QJsonObject cameraObject;
-	QJsonArray promotionsArray;
+	// Tableau pour stocker les informations de chaque Lynx
+	QJsonArray lynxArray;
 
 	for (const LynxInfo& lynx : lynxList) {
 		// Récupération des caméras
 		MambaInfo mambaInfos = lynx.value<MambaInfo>("mambaInfos");
 
 		if (mambaInfos.ip == ipCamera.toStdString()) {
-			// Si l'IP correspond, on récupère les informations de la caméra
-			cameraObject["name"] = QString::fromStdString(mambaInfos.name);
-			cameraObject["ip"] = QString::fromStdString(mambaInfos.ip);
-			cameraObject["port"] = static_cast<int>(mambaInfos.port);
-			cameraObject["uid"] = QString::fromStdString(mambaInfos.macAddress);
+			// Créer un objet pour le Lynx courant
+			QJsonObject lynxObject;
 
-			resetDuration = QString::number(lynx.value<double>("resetDuration", 0.0));
-			// Récupération du serialNumber
-			serialNumber = QString::fromStdString(lynx.value<std::string>("serialNumber", ""));
+			// Ajouter les informations de la caméra
+			lynxObject["camera"] = QJsonObject{
+				{"name", QString::fromStdString(mambaInfos.name)},
+				{"ip", QString::fromStdString(mambaInfos.ip)},
+				{"port", static_cast<int>(mambaInfos.port)},
+				{"uid", QString::fromStdString(mambaInfos.macAddress)}
+			};
+
+			// Ajouter la durée de réinitialisation
+			lynxObject["resetDuration"] = QString::number(lynx.value<double>("resetDuration", 0.0));
+
+			// Ajouter le numéro de série
+			lynxObject["serialNumber"] = QString::fromStdString(lynx.value<std::string>("serialNumber", ""));
 
 			// Récupération des promotions
 			PromotionInfo promotionInfos = lynx.value<PromotionInfo>("promotionInfos");
@@ -171,19 +175,16 @@ QString ConfigureController::deviceDetails(QString ipCamera)
 			promotionObject["startChannel"] = static_cast<int>(promotionInfos.startChannel);
 			promotionObject["universe"] = static_cast<int>(promotionInfos.universe);
 
-			promotionsArray.append(promotionObject);
+			lynxObject["promotion"] = promotionObject;
 
-			// On sort de la boucle dès qu'on a trouvé la caméra
-			break;
+			// Ajouter l'objet Lynx au tableau
+			lynxArray.append(lynxObject);
 		}
 	}
 
-	// Ajouter les informations au résultat JSON
+	// Créer le JSON final
 	QJsonObject jsonResult;
-	jsonResult["camera"]		= cameraObject;
-	jsonResult["promotion"]		= promotionsArray;
-	jsonResult["resetDuration"]	= resetDuration;
-	jsonResult["serialNumber"]	= serialNumber;
+	jsonResult["lynxList"] = lynxArray;
 
 	// Convertir en JSON formaté
 	QJsonDocument jsonDoc(jsonResult);
