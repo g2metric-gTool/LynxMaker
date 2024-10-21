@@ -63,6 +63,14 @@ FluScrollablePage {
                 cleanEnabled: true
                 width: cameraList.width
                 placeholderText: qsTr("Reset duration (s)")
+
+                validator: DoubleValidator {
+                    bottom: 0.0
+                    top: 1000.0
+                    decimals: 1
+                }
+
+                property double value: text !== "" ? parseFloat(text.replace(",", ".")) : 0.0
             }
 
             FluAutoSuggestBox {
@@ -113,7 +121,7 @@ FluScrollablePage {
                     let cameraIpAddress = cameraList.currentText;
                     let lynxSerialNumber = serialNumber.text;
                     let promotionIpAddress = promotionList.currentText;
-                    let resetDurationValue = parseFloat(resetDuration.text);
+                    let resetDurationValue = resetDuration.value;
                     ConfigureController.run(cameraIpAddress, lynxSerialNumber, promotionIpAddress, resetDurationValue);
                 }
             }
@@ -142,6 +150,11 @@ FluScrollablePage {
 
     function generateSerialNumbers(start, end) {
         const serialNumbers = [];
+
+        serialNumbers.push({ title: 'SN_X' });
+        serialNumbers.push({ title: 'SN_Y' });
+        serialNumbers.push({ title: 'SN_Z' });
+
         for (let i = start; i <= end; i++) {
             const serialNumber = `SN_${i}`;
             serialNumbers.push({

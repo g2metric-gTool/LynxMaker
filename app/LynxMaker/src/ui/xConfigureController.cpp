@@ -11,7 +11,7 @@
 #include <QFutureWatcher>
 
 #include "ui/xDiscover.h"
-#include "utils/pointer/gPointer.h"
+#include "utils/gUtils.h"
 #include "ui/xConfigureController.h"
 
 static int S_PORT = 22;
@@ -31,7 +31,7 @@ ConfigureController::ConfigureController(QObject* parent)
 
 ConfigureController::~ConfigureController()
 {
-	gPointerUtils::clearPointer(_maker);
+	gUtils::safeDelete(_maker);
 }
 
 QStringList ConfigureController::promotionList()
