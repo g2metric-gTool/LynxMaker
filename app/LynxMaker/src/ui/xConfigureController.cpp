@@ -3,9 +3,12 @@
 #include <iomanip>
 #include <iostream>
 
+#include <QFuture>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QtConcurrent>
 #include <QJsonDocument>
+#include <QFutureWatcher>
 
 #include "ui/xDiscover.h"
 #include "utils/pointer/gPointer.h"
@@ -52,41 +55,81 @@ QStringList ConfigureController::cameraList()
 void ConfigureController::discover()
 {
 	std::list<MambaInfo> cameras = gMamba::Connection::discover();
-	//if (_cameras != cameras) {
+	if (_cameras != cameras) {
 		_cameras = cameras;
 		emit cameraListChanged();
-	//}
+	}
 
 	std::list<PromotionInfo> promotions = gPromotion::Connection::discover();
-	//if (_promotions != promotions) {
+	if (_promotions != promotions) {
 		_promotions = promotions;
 		emit promotionListChanged();
-	//}
+	}
 }
 
 void ConfigureController::run(const QString& cameraIpAddress, const QString& lynxSerialNumber, const QString& promotionIpAddress, const double& resetDuration)
 {
-	_log << "Configure: " << cameraIpAddress.toStdString() << " | " << promotionIpAddress.toStdString() << " | " << resetDuration << "(s) | " << lynxSerialNumber.toStdString() << gLog::info;
-	try {
-		_maker = new xMaker::Maker(cameraIpAddress.toStdString(), S_USERNAME, S_password, S_PORT);
-		std::string promotionMacAddress = _promotionUid(promotionIpAddress).toStdString();
-		if (promotionMacAddress.empty()) {
-			_log << "Error: Unable to find MAC address for promotion with IP address '" << promotionIpAddress.toStdString() << "'" << gLog::error;
-			return;
+	// Créez un QFuture pour exécuter la tâche en arrière-plan
+	auto future = QtConcurrent::run([this, cameraIpAddress, lynxSerialNumber, promotionIpAddress, resetDuration]() -> bool {
+		try {
+			_maker = new xMaker::Maker(cameraIpAddress.toStdString(), S_USERNAME, S_password, S_PORT);
+			std::string promotionMacAddress = _promotionUid(promotionIpAddress).toStdString();
+			if (promotionMacAddress.empty()) {
+				handleErrorMessage("Unable to find MAC address");
+				_log << "Error: Unable to find MAC address for promotion with IP address '" << promotionIpAddress.toStdString() << "'" << gLog::error;
+				return false;
+			}
+
+			if (std::isnan(resetDuration)) {
+				handleErrorMessage("Reset duration is not valid");
+				_log << "Reset duration is not valid" << gLog::info;
+				return false;
+			}
+			if (_maker->configureDevice(lynxSerialNumber.toStdString(), promotionMacAddress, resetDuration)) {
+				_log << "Configuration successful for device: " << lynxSerialNumber.toStdString() << gLog::info;
+				return true;
+			}
+			else {
+				handleErrorMessage("Failed to configure device");
+				_log << "Failed to configure device: " << lynxSerialNumber.toStdString() << gLog::error;
+				return false;
+			}
 		}
-		if (_maker->configureDevice(lynxSerialNumber.toStdString(), promotionMacAddress, 40.5))
-			_log << "Configuration successful for device: " << lynxSerialNumber.toStdString() << gLog::info;
-		else
-			_log << "Failed to configure device: " << lynxSerialNumber.toStdString() << gLog::error;
-	}
-	catch (const g2::core::Exception& e) {
-		_log << "Configuration failed: Exception occurred: " << e.comment() << gLog::error;
-	}
-	catch (const std::exception& e) {
-		_log << "Configuration failed: Standard exception occurred: " << e.what() << gLog::error;
-	}
-	catch (...) {
-		_log << "Configuration failed: Unknown exception occurred." << gLog::error;
+		catch (const g2::core::Exception& e) {
+			handleErrorMessage("Configuration failed: Exception occurred");
+			_log << "Configuration failed: Exception occurred: " << e.comment() << gLog::error;
+			return false;
+		}
+		catch (const std::exception& e) {
+			handleErrorMessage("Configuration failed: Standard exception occurred");
+			_log << "Configuration failed: Standard exception occurred: " << e.what() << gLog::error;
+			return false;
+		}
+		catch (...) {
+			handleErrorMessage("Configuration failed: Unknown exception occurred");
+			_log << "Configuration failed: Unknown exception occurred." << gLog::error;
+			return false;
+		}
+		});
+
+	// Créez un QFutureWatcher pour surveiller l'état de l'opération
+	QFutureWatcher<bool>* watcher = new QFutureWatcher<bool>(this);
+	connect(watcher, &QFutureWatcher<bool>::finished, this, &ConfigureController::onRunFinished);
+	watcher->setFuture(future);
+}
+
+void ConfigureController::onRunFinished() {
+	QFutureWatcher<bool>* watcher = static_cast<QFutureWatcher<bool>*>(sender());
+	if (watcher) {
+		// Vérifiez le résultat de l'opération
+		bool success = watcher->result();
+		if (success) {
+			emit executionSuccessful();
+		}
+		else {
+			emit errorOccurred("Configuration failed");
+		}
+		watcher->deleteLater(); // Nettoyez le watcher
 	}
 }
 
@@ -94,18 +137,17 @@ QString ConfigureController::deviceDetails(QString ipCamera)
 {
 	if (ipCamera.isEmpty()) return "";
 
-
 	// Découverte des LynxInfo
 	std::list<LynxInfo> lynxList = Connection::discover();
 
 	// Variables pour stocker les informations filtrées
+	QString resetDuration;
 	QString serialNumber;
 	QJsonObject cameraObject;
 	QJsonArray promotionsArray;
 
 	for (const LynxInfo& lynx : lynxList) {
 		// Récupération des caméras
-
 		MambaInfo mambaInfos = lynx.value<MambaInfo>("mambaInfos");
 
 		if (mambaInfos.ip == ipCamera.toStdString()) {
@@ -115,6 +157,7 @@ QString ConfigureController::deviceDetails(QString ipCamera)
 			cameraObject["port"] = static_cast<int>(mambaInfos.port);
 			cameraObject["uid"] = QString::fromStdString(mambaInfos.macAddress);
 
+			resetDuration = QString::number(lynx.value<double>("resetDuration", 0.0));
 			// Récupération du serialNumber
 			serialNumber = QString::fromStdString(lynx.value<std::string>("serialNumber", ""));
 
@@ -137,9 +180,10 @@ QString ConfigureController::deviceDetails(QString ipCamera)
 
 	// Ajouter les informations au résultat JSON
 	QJsonObject jsonResult;
-	jsonResult["camera"] = cameraObject;
-	jsonResult["promotion"] = promotionsArray;
-	jsonResult["serialNumber"] = serialNumber;
+	jsonResult["camera"]		= cameraObject;
+	jsonResult["promotion"]		= promotionsArray;
+	jsonResult["resetDuration"]	= resetDuration;
+	jsonResult["serialNumber"]	= serialNumber;
 
 	// Convertir en JSON formaté
 	QJsonDocument jsonDoc(jsonResult);
@@ -153,4 +197,8 @@ QString ConfigureController::_promotionUid(QString ip)
 			return promotion.uid.c_str();
 	}
 	return "";
+}
+
+void ConfigureController::handleErrorMessage(const QString& message) {
+	emit errorOccurred(message);
 }

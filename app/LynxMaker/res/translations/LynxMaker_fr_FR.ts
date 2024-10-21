@@ -85,6 +85,10 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Reset duration (s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Serial number</source>
         <translation type="unfinished"></translation>
     </message>
@@ -97,15 +101,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Refresh</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset duration (s)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Discover</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device details</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

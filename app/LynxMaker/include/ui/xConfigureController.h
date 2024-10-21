@@ -15,8 +15,8 @@
 class ConfigureController : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QStringList promotionList READ promotionList NOTIFY promotionListChanged)
     Q_PROPERTY(QStringList cameraList READ cameraList NOTIFY cameraListChanged)
+    Q_PROPERTY(QStringList promotionList READ promotionList NOTIFY promotionListChanged)
 
 public:
     ConfigureController(QObject* parent = nullptr);
@@ -25,13 +25,21 @@ public:
     QStringList cameraList();
     QStringList promotionList();
     
-    Q_INVOKABLE void run(const QString& cameraIpAddress, const QString& lynxSerialNumber, const QString& promotionIpAddress, const double& resetDuration);
     Q_INVOKABLE void discover();
     Q_INVOKABLE QString deviceDetails(QString ipCamera);
+
+    Q_INVOKABLE void run(const QString& cameraIpAddress, const QString& lynxSerialNumber, const QString& promotionIpAddress, const double& resetDuration);
+
+public slots:
+    void onRunFinished();
+    void handleErrorMessage(const QString& message);
 
 signals:
     void cameraListChanged();
     void promotionListChanged();
+
+    void executionSuccessful();
+    void errorOccurred(const QString& message);
 
 private:
     xMaker::Maker* _maker;

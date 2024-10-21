@@ -8,8 +8,8 @@ import "../global"
 FluWindow {
     id:window
     title: Qt.application.name
-    width: 500
-    height: 400
+    width: 600
+    height: 500
     autoDestroy: true
     fixSize: true
     launchMode: FluWindowType.SingleTask

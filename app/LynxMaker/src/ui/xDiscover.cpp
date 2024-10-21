@@ -64,8 +64,9 @@ std::list<gCore::Parameters> Connection::discover()
 	std::list<PromotionInfo> promotionList = gPromotion::Connection::discover();
 
 	for (const auto& camera : cameraList) try {
-		std::string serialNumber = regexSearch(camera.details, R"(onvif://www.onvif.org/Lynx/(\w+))");
-		std::string promotionUid = regexSearch(camera.details, R"(onvif://www.onvif.org/Promotion/([a-fA-F0-9:]+))");
+		std::string serialNumber	= regexSearch(camera.details, R"(onvif://www.onvif.org/Lynx/(\w+))");
+		std::string promotionUid	= regexSearch(camera.details, R"(onvif://www.onvif.org/Promotion/([a-fA-F0-9:]+))");
+		double resetDuration		= std::stod(regexSearch(camera.details, R"(onvif://www.onvif.org/ResetDuration/([0-9\.]+))"));
 
 		if (!promotionUid.empty() && !serialNumber.empty())
 		{
@@ -76,6 +77,7 @@ std::list<gCore::Parameters> Connection::discover()
 					gCore::Parameters infos;
 					infos["promotionInfos"] = promotion;
 					infos["mambaInfos"] = camera;
+					infos["resetDuration"] = resetDuration;
 					infos["serialNumber"] = serialNumber;
 					lynxInfos.push_back(infos);
 					found = true;

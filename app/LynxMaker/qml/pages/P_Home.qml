@@ -6,6 +6,18 @@ import "../common"
 FluScrollablePage {
     id: root
 
+    Connections {
+        target: ConfigureController
+        function onErrorOccurred(message) {
+            hideLoading()
+            showError(message, 3000)
+        }
+        function onExecutionSuccessful() {
+            hideLoading()
+            showSuccess("Configuration done!", 3000)
+        }
+    }
+
     ColumnLayout {
         spacing: 25
         Layout.fillWidth: true
@@ -13,6 +25,7 @@ FluScrollablePage {
         // Device list
         Row {
             spacing: 25
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             ColumnLayout {
                 spacing: 10
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -40,30 +53,23 @@ FluScrollablePage {
                     }
                 }
             }
-
-            ColumnLayout {
-                spacing: 10
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                FluText {
-                    text: qsTr("Reset duration (s)")
-                }
-                FluSpinBox{
-                    id: resetDuration
-                    value: 8
-                    from: 0
-                    to: 60
-                    editable: true
-                }
-            }
         }
-        // Serial number
-        ColumnLayout {
-            spacing: 10
+
+        Row {
+            spacing: 25
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            FluTextBox {
+                id: resetDuration
+                cleanEnabled: true
+                width: cameraList.width
+                placeholderText: qsTr("Reset duration (s)")
+            }
+
             FluAutoSuggestBox {
                 id: serialNumber
+                width: promotionList.width
                 placeholderText: qsTr("Serial number")
-                items: generateSerialNumbers(10, 50)
+                items: generateSerialNumbers(10, 30)
             }
         }
         // Device details
@@ -80,14 +86,14 @@ FluScrollablePage {
                     height: parent.height
                     contentWidth: width
                     boundsBehavior: Flickable.StopAtBounds
-                    contentHeight: text_info.height
+                    contentHeight: deviceDetails.height
                     ScrollBar.vertical: FluScrollBar {
                     }
                     FluText {
                         id: deviceDetails
                         width: scrollview.width
                         wrapMode: Text.WrapAnywhere
-                        padding: 14
+                        padding: 10
                     }
                 }
             }
@@ -97,21 +103,22 @@ FluScrollablePage {
             spacing: 25
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             X_Button {
-                width: 75
+                width: 125
                 height: 30
                 radius: 5
                 text: qsTr("Configure")
                 enabled: serialNumber.text.length > 0
                 onClicked: {
-                    let cameraIpAddress     = cameraList.currentText;
-                    let lynxSerialNumber    = serialNumber.text;
-                    let promotionIpAddress  = promotionList.currentText;
-                    let resetDurationValue  = resetDuration.value;
-                    ConfigureController.run(cameraIpAddress, lynxSerialNumber, promotionIpAddress, resetDurationValue)
+                    showLoading()
+                    let cameraIpAddress = cameraList.currentText;
+                    let lynxSerialNumber = serialNumber.text;
+                    let promotionIpAddress = promotionList.currentText;
+                    let resetDurationValue = parseFloat(resetDuration.text);
+                    ConfigureController.run(cameraIpAddress, lynxSerialNumber, promotionIpAddress, resetDurationValue);
                 }
             }
             X_Button {
-                width: 75
+                width: 125
                 height: 30
                 radius: 5
                 text: qsTr("Discover")
@@ -120,13 +127,14 @@ FluScrollablePage {
                 }
             }
             X_Button {
-                width: 75
+                width: 125
                 height: 30
                 radius: 5
-                text: qsTr("Refresh")
+                text: qsTr("Device details")
+                enabled: ConfigureController.cameraList.length !== 0 && ConfigureController.promotionList.length !== 0
                 onClicked: {
-                    deviceDetails.text = ConfigureController.deviceDetails(cameraList.currentText)
-                    expander.expand = true
+                    deviceDetails.text = ConfigureController.deviceDetails(cameraList.currentText);
+                    expander.expand = true;
                 }
             }
         }
